@@ -1,0 +1,17 @@
+J2ME emulation layer for J2SE. Targetting games and entertainment applications.
+
+h1. Description
+
+RunME supports only a game canvas. None of the J2ME UI controls is supported. Compared to ME4SE, however, RunME offers real-time scaling of the rendered J2ME canvas plus a full-screen mode.
+
+h1. Usage
+
+Main entry point is the MIDletLauncher class. Have a look at this class or at the IntelliJ run configurations of the example projects.
+
+h1. License
+
+This is open source software. See the gpl.txt file for more infomation.
+
+Note that some files are included for which different licenses may apply.
+
+Note that for all files that are probably 'mine', the GPL applies.
