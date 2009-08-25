@@ -10,10 +10,6 @@ import java.awt.event.KeyListener;
 import java.lang.reflect.Method;
 
 
-
-/**
- * TODO: Describe this!
- */
 public final class MIDletContainer implements KeyListener
     {
     public static final MIDlet createMIDlet( final Class aMIDletClass )
@@ -116,7 +112,6 @@ public final class MIDletContainer implements KeyListener
         if ( aVisibleFlag ) myDisplay.displayable.showNotify();
         else myDisplay.displayable.hideNotify();
         }
-
 
 
     private MIDlet myMIDlet;

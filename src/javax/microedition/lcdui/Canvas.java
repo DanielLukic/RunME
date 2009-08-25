@@ -4,9 +4,6 @@ import java.awt.event.KeyEvent;
 
 
 
-/**
- * TODO: Describe this!
- */
 public abstract class Canvas extends Displayable
 {
     public static final int DOWN = 6;

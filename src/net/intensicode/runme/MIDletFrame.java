@@ -15,10 +15,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 
 
-
-/**
- * TODO: Describe this!
- */
 public final class MIDletFrame extends JFrame implements DisplayContext, KeyListener, FocusListener
     {
     public MIDletFrame( final int aWidth, final int aHeight )
@@ -219,10 +215,10 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         final float xScale = screenWidth * 1.0f / imageWidth;
         final float yScale = screenHeight * 1.0f / imageHeight;
         final float scale = Math.min( xScale, yScale );
-        final int width = (int) (imageWidth * scale);
-        final int height = (int) (imageHeight * scale);
-        final int x = (screenWidth - width) / 2;
-        final int y = (screenHeight - height) / 2;
+        final int width = (int) ( imageWidth * scale );
+        final int height = (int) ( imageHeight * scale );
+        final int x = ( screenWidth - width ) / 2;
+        final int y = ( screenHeight - height ) / 2;
         aGraphics.setColor( Color.DARK_GRAY );
         aGraphics.fillRect( 0, 0, x, screenHeight );
         aGraphics.fillRect( 0, 0, screenWidth, y );

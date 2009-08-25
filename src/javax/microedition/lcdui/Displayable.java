@@ -1,8 +1,5 @@
 package javax.microedition.lcdui;
 
-/**
- * TODO: Describe this!
- */
 public abstract class Displayable
     {
     public final void attach( final DisplayContext aListener )

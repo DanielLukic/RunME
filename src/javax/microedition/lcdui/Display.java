@@ -6,9 +6,6 @@ import javax.microedition.midlet.MIDlet;
 
 
 
-/**
- * TODO: Describe this!
- */
 public abstract class Display
 {
     public static final void register( final MIDlet aMIDlet, final Display aDisplay )

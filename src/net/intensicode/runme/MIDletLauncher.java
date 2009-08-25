@@ -12,9 +12,6 @@ import java.util.Properties;
 
 
 
-/**
- * TODO: Describe this!
- */
 public final class MIDletLauncher
     {
     public static void main( final String[] aArguments ) throws Throwable

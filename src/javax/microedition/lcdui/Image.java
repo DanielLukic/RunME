@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-/**
- * TODO: Describe this!
- */
 public final class Image
     {
     public static GraphicsConfiguration target_gc;

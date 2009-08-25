@@ -6,9 +6,6 @@ import java.awt.image.VolatileImage;
 
 
 
-/**
- * TODO: Describe this!
- */
 public final class Graphics
 {
     public static final int HCENTER = 1;
