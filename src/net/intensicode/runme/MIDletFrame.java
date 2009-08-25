@@ -6,17 +6,18 @@ import javax.microedition.lcdui.DisplayContext;
 import javax.microedition.midlet.MIDlet;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
+import java.util.*;
+import java.util.Timer;
 
 
 public final class MIDletFrame extends JFrame implements DisplayContext, KeyListener, FocusListener
     {
+    private final Timer myTimer = new Timer();
+
     public MIDletFrame( final int aWidth, final int aHeight )
         {
         myDisplay = new MIDletDisplay( this, aWidth, aHeight );
@@ -74,18 +75,37 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
     public final synchronized void onRepaintDone()
         {
         if ( myDisplayBuffer == null ) return;
-        if ( myDisplayBuffer.contentsLost() ) return;
 
         final BufferStrategy strategy = getBufferStrategy();
-        if ( strategy == null ) return;
+        if ( strategy == null )
+            {
+            createBufferStrategy( 2 );
+            return;
+            }
 
-        final Graphics graphics = strategy.getDrawGraphics();
-        if ( graphics == null ) return;
+        try
+            {
+            final Graphics graphics = strategy.getDrawGraphics();
+            if ( graphics == null ) return;
 
-        paint( graphics, myDisplayBuffer );
+            try
+                {
+                if ( myDisplayBuffer.contentsLost() ) return;
+                if ( strategy.contentsLost() ) return;
 
-        graphics.dispose();
-        strategy.show();
+                paint( graphics, myDisplayBuffer );
+                strategy.show();
+                }
+            finally
+                {
+                graphics.dispose();
+                }
+            }
+        catch ( final Throwable t )
+            {
+            LOG.debug( "X exception: {}", t );
+            createBufferStrategy( 1 );
+            }
         }
 
     // From FocusListener
@@ -95,7 +115,7 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         myContainer.setVisible( true );
         if ( myPausedFlag )
             {
-            Log.create().debug( "MIDletFrame resuming MIDlet after pause" );
+            LOG.debug( "MIDletFrame resuming MIDlet after pause" );
             myPausedFlag = false;
             myContainer.start();
             }
@@ -134,15 +154,16 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
 
     // Implementation
 
-    private final synchronized void toggleFullScreenMode()
+    private synchronized void toggleFullScreenMode()
         {
         final boolean isInFullScreenMode = getGraphicsDevice().getFullScreenWindow() == this;
         if ( isInFullScreenMode ) setFullScreenMode( false );
         else setFullScreenMode( true );
         }
 
-    private final void setFullScreenMode( final boolean aFullScreenFlag )
+    private void setFullScreenMode( final boolean aFullScreenFlag )
         {
+        if ( myContainer != null ) myContainer.setVisible( false );
         setVisible( false );
         dispose();
 
@@ -153,33 +174,41 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         if ( aFullScreenFlag ) activateFullScreenMode();
         else activateWindowedMode();
 
-        try
-            {
-            Thread.sleep( 250 );
-            }
-        catch ( final InterruptedException e )
-            {
-            }
-
         javax.microedition.lcdui.Image.target_gc = getGraphicsConfiguration();
+
+        myTimer.schedule( new FocusStealerTask(), FOCUS_STEAL_INTERVAL );
         }
 
-    private final void activateWindowedMode()
+    private static final int FOCUS_STEAL_INTERVAL = 250; // millis - more than enough - 50 would do, too
+
+    public final class FocusStealerTask extends TimerTask
+        {
+        public void run()
+            {
+            if ( hasFocus() ) return;
+            requestFocus( false );
+            requestFocusInWindow( false );
+            if ( hasFocus() ) return;
+            myTimer.schedule( new FocusStealerTask(), FOCUS_STEAL_INTERVAL );
+            }
+        }
+
+    private void activateWindowedMode()
         {
         setUndecorated( false );
+        setIgnoreRepaint( true );
 
         getGraphicsDevice().setFullScreenWindow( null );
 
         centerFrame();
         setVisible( true );
         setCursor( Cursor.getDefaultCursor() );
-
-        createBufferStrategy( 2 );
         }
 
-    private final void activateFullScreenMode()
+    private void activateFullScreenMode()
         {
         setUndecorated( true );
+        setIgnoreRepaint( true );
 
         final GraphicsDevice device = getGraphicsDevice();
         device.setFullScreenWindow( this );
@@ -189,8 +218,6 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
 
         setVisible( true );
         setCursor( getEmptyCursor() );
-
-        createBufferStrategy( 2 );
         }
 
     private void centerFrame()
@@ -212,7 +239,7 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         setBounds( x, y, width, height );
         }
 
-    private final void paint( final Graphics aGraphics, final VolatileImage aImage )
+    private void paint( final Graphics aGraphics, final VolatileImage aImage )
         {
         final Insets insets = getInsets();
         aGraphics.translate( insets.left, insets.top );
@@ -238,12 +265,12 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         aGraphics.translate( -insets.left, -insets.top );
         }
 
-    private final GraphicsDevice getGraphicsDevice()
+    private GraphicsDevice getGraphicsDevice()
         {
         return getGraphicsConfiguration().getDevice();
         }
 
-    private final Cursor getEmptyCursor()
+    private Cursor getEmptyCursor()
         {
         if ( myEmptyCursor == null )
             {
@@ -253,7 +280,6 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
             }
         return myEmptyCursor;
         }
-
 
 
     private boolean myPausedFlag;
