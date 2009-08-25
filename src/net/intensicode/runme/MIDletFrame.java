@@ -238,7 +238,7 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         {
         if ( myEmptyCursor == null )
             {
-            final Point hotSpot = new Point( 1, 1 );
+            final Point hotSpot = new Point( 0, 0 );
             final BufferedImage emptyImage = new BufferedImage( 1, 1, BufferedImage.TYPE_INT_ARGB );
             myEmptyCursor = Toolkit.getDefaultToolkit().createCustomCursor( emptyImage, hotSpot, "INVISIBLE" );
             }
