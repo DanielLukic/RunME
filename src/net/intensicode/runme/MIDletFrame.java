@@ -193,13 +193,22 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
         createBufferStrategy( 2 );
         }
 
-    private final void centerFrame()
+    private void centerFrame()
         {
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final int width = screenSize.width * 2 / 3;
-        final int height = screenSize.height * 2 / 3;
-        final int x = (screenSize.width - width) / 2;
-        final int y = (screenSize.height - height) / 2;
+        final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        final DisplayMode displayMode = ge.getDefaultScreenDevice().getDisplayMode();
+
+        LOG.debug( "Max win bounds: {}", ge.getMaximumWindowBounds() );
+        LOG.debug( "Screen width: {}", displayMode.getWidth() );
+        LOG.debug( "Screen height: {}", displayMode.getHeight() );
+
+        final int screenWidth = displayMode.getWidth();
+        final int screenHeight = displayMode.getHeight();
+
+        final int width = screenWidth * 2 / 3;
+        final int height = screenHeight * 2 / 3;
+        final int x = ( screenWidth - width ) / 2;
+        final int y = ( screenHeight - height ) / 2;
         setBounds( x, y, width, height );
         }
 
@@ -258,4 +267,6 @@ public final class MIDletFrame extends JFrame implements DisplayContext, KeyList
     private final MIDletDisplay myDisplay;
 
     private javax.microedition.lcdui.Graphics myMIDletGraphics;
+
+    private static final Log LOG = Log.create();
     }
