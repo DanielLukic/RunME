@@ -1,14 +1,8 @@
 package net.intensicode.runme;
 
-import java.awt.*;
-
-public interface DisplayContext
+public interface DisplayContext extends GraphicsContext
     {
     boolean isFullScreen();
-
-    GraphicsDevice getGraphicsDevice();
-
-    GraphicsConfiguration getGraphicsConfiguration();
 
     void centerAndResizeTo( int aWidth, int aHeight );
 
