@@ -1,6 +1,6 @@
 package javax.microedition.lcdui;
 
-import net.intensicode.runme.DisplayContext;
+import net.intensicode.runme.GraphicsContext;
 import net.intensicode.runme.util.Log;
 
 import javax.imageio.ImageIO;
@@ -10,7 +10,7 @@ import java.io.*;
 
 public final class Image
     {
-    public static DisplayContext theDisplayContext;
+    public static GraphicsContext theGraphicsContext;
 
 
     public static Image createImage( final byte[] aData, final int aOffset, final int aLength ) throws IOException
@@ -25,7 +25,7 @@ public final class Image
         final BufferedImage loaded = ImageIO.read( aInputStream );
         if ( loaded == null ) throw new NullPointerException();
 
-        final BufferedImage image = createBlitImage( loaded );
+        final BufferedImage image = createBlitImage( loaded.getWidth(), loaded.getHeight() );
         final Graphics2D graphics = image.createGraphics();
         graphics.drawImage( loaded, 0, 0, null );
         return new Image( image, graphics );
@@ -33,8 +33,7 @@ public final class Image
 
     public static Image createImage( final int aWidth, final int aHeight )
         {
-        final GraphicsConfiguration configuration = theDisplayContext.getGraphicsConfiguration();
-        return new Image( configuration.createCompatibleImage( aWidth, aHeight, Transparency.TRANSLUCENT ) );
+        return new Image( createBlitImage( aWidth, aHeight ) );
         }
 
     public static Image createImage( final Image aSource, final int aX, final int aY, final int aWidth, final int aHeight, final int aTransform )
@@ -48,7 +47,7 @@ public final class Image
     public static Image createRGBImage( final int[] aARGB32, final int aWidth, final int aHeight, final boolean aAlpha )
         {
         final int transparency = aAlpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE;
-        final GraphicsConfiguration configuration = theDisplayContext.getGraphicsConfiguration();
+        final GraphicsConfiguration configuration = theGraphicsContext.getGraphicsConfiguration();
         final BufferedImage image = configuration.createCompatibleImage( aWidth, aHeight, transparency );
         image.setRGB( 0, 0, aWidth, aHeight, aARGB32, 0, aWidth );
         return new Image( image );
@@ -96,10 +95,19 @@ public final class Image
         myBufferedGraphics = new Graphics( aImage, aGraphics2D );
         }
 
-    private static BufferedImage createBlitImage( final BufferedImage loaded )
+    private static BufferedImage createBlitImage( final int aWidth, final int aHeight )
         {
-        final GraphicsConfiguration configuration = theDisplayContext.getGraphicsConfiguration();
-        return configuration.createCompatibleImage( loaded.getWidth(), loaded.getHeight(), Transparency.TRANSLUCENT );
+        if ( theGraphicsContext == null )
+            {
+            // GalaxinaEditor for example..
+            return new BufferedImage( aWidth, aHeight, BufferedImage.TYPE_INT_ARGB );
+            }
+        else
+            {
+            // RunME context..
+            final GraphicsConfiguration configuration = theGraphicsContext.getGraphicsConfiguration();
+            return configuration.createCompatibleImage( aWidth, aHeight, Transparency.TRANSLUCENT );
+            }
         }
 
 
