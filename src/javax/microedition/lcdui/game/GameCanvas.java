@@ -30,7 +30,7 @@ public class GameCanvas extends Canvas
 
     protected final void paint( final Graphics aGraphics )
         {
-        aGraphics.drawImage( myBuffer, 0, 0, ALIGN_TOP_LEFT );
+        if ( myBuffer != null ) aGraphics.drawImage( myBuffer, 0, 0, ALIGN_TOP_LEFT );
         }
 
 
