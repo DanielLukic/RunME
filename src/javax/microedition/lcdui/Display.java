@@ -22,6 +22,12 @@ public abstract class Display
         myDisplays.put( aMidlet, aDisplay );
         }
 
+    public static void unregister( final MIDlet aMidlet )
+        {
+        if ( !myDisplays.containsKey( aMidlet ) ) throw new IllegalStateException();
+        myDisplays.remove( aMidlet );
+        }
+
     // J2ME API
 
     public static Display getDisplay( final MIDlet aMidlet )
@@ -30,7 +36,7 @@ public abstract class Display
         return myDisplays.get( aMidlet );
         }
 
-    public final void setCurrent( final Displayable aDisplayable )
+    public void setCurrent( final Displayable aDisplayable )
         {
         if ( myDisplayable != null ) myDisplayable.hide();
         myDisplayable = aDisplayable;

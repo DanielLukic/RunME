@@ -48,8 +48,8 @@ public final class MIDletLauncher
 
         final SystemContext context = new SystemContext();
         final DisplayTransformation transformation = new DisplayTransformation();
-        final MIDletDisplay display = new MIDletDisplay( midlet );
         final MIDletDisplayBuffer buffer = new MIDletDisplayBuffer( context, targetCanvasSize );
+        final MIDletDisplay display = new MIDletDisplay( midlet, buffer );
         final MIDletContainer container = new MIDletContainer( midlet );
         final MIDletKeyHandler keyHandler = new MIDletKeyHandler( midlet );
         final MIDletPointerHandler pointerHandler = new MIDletPointerHandler( midlet, transformation );
@@ -64,9 +64,8 @@ public final class MIDletLauncher
         context.displayTransformation = transformation;
 
         javax.microedition.io.Connector.implementationClass = connectorClassName;
-        javax.microedition.lcdui.Image.theDisplayContext = frame;
+        javax.microedition.lcdui.Image.theGraphicsContext = frame;
         javax.microedition.lcdui.Displayable.displaySize = targetCanvasSize;
-        javax.microedition.lcdui.Displayable.displayBuffer = buffer;
         javax.microedition.lcdui.Font.displaySize = targetCanvasSize;
 
         fullScreenManager.setFullScreenMode( false );

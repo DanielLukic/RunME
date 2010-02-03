@@ -6,9 +6,9 @@ import java.awt.Dimension;
 
 public abstract class Displayable
     {
-    public static DisplayBuffer displayBuffer;
-
     public static Dimension displaySize;
+
+    public DisplayBuffer displayBuffer;
 
 
     // RunME API
