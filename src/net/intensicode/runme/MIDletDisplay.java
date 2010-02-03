@@ -1,35 +1,12 @@
 package net.intensicode.runme;
 
 import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.DisplayContext;
-import javax.microedition.lcdui.Displayable;
-
+import javax.microedition.midlet.MIDlet;
 
 public final class MIDletDisplay extends Display
     {
-    Displayable displayable;
-
-    final int width;
-
-    final int height;
-
-
-    public MIDletDisplay( final DisplayContext aContext, final int aWidth, final int aHeight )
+    public MIDletDisplay( final MIDlet aMidlet )
         {
-        myContext = aContext;
-        width = aWidth;
-        height = aHeight;
+        register( aMidlet, this );
         }
-
-    // From Display
-
-    public final void setCurrent( final Displayable aDisplayable )
-        {
-        if ( displayable != null ) displayable.detach();
-        displayable = aDisplayable;
-        if ( displayable != null ) displayable.attach( myContext );
-        }
-
-
-    private final DisplayContext myContext;
     }

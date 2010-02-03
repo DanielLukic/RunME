@@ -1,24 +1,21 @@
-/************************************************************************/
-/* {{PROJECT_NAME}}             {{COMPANY}}             {{DATE_CREATE}} */
-/************************************************************************/
-
 package javax.microedition.media;
 
 import net.intensicode.runme.util.Log;
 
 import javax.sound.sampled.*;
-import java.io.InputStream;
+import java.io.*;
 
-
-
-/**
- * TODO: Describe this!
- */
 public final class DirectPlayer implements Player, Runnable
     {
     public DirectPlayer( final InputStream aInputStream ) throws MediaException
         {
         if ( aInputStream == null ) throw new NullPointerException();
+
+        final Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
+        for ( int idx = 0; idx < mixerInfos.length; idx++ )
+            {
+            LOG.debug( "Mixer info: {}", mixerInfos[ idx ] );
+            }
 
         for ( final AudioFileFormat.Type type : AudioSystem.getAudioFileTypes() )
             {
@@ -27,7 +24,8 @@ public final class DirectPlayer implements Player, Runnable
 
         try
             {
-            final AudioInputStream audioStream = AudioSystem.getAudioInputStream( aInputStream );
+            final BufferedInputStream bufferedInputStream = new BufferedInputStream( aInputStream );
+            final AudioInputStream audioStream = AudioSystem.getAudioInputStream( bufferedInputStream );
             final AudioFormat format = audioStream.getFormat();
             LOG.debug( "Audio format: {}", format );
 
@@ -37,7 +35,7 @@ public final class DirectPlayer implements Player, Runnable
             myDataLine.open( format );
 
             final int sourceFrameSize = myDataLine.getFormat().getFrameSize();
-            myFrameSize = (sourceFrameSize == AudioSystem.NOT_SPECIFIED) ? 4 : sourceFrameSize;
+            myFrameSize = ( sourceFrameSize == AudioSystem.NOT_SPECIFIED ) ? 4 : sourceFrameSize;
 
             for ( final javax.sound.sampled.Control c : myDataLine.getControls() )
                 {
@@ -69,7 +67,7 @@ public final class DirectPlayer implements Player, Runnable
 
     public final Control[] getControls()
         {
-        throw new RuntimeException( "NYI" );
+        return new Control[]{ myVolumeControl };
         }
 
     // From Player
@@ -92,7 +90,7 @@ public final class DirectPlayer implements Player, Runnable
         {
         if ( aMediaTime != 0 ) throw new IllegalArgumentException();
 
-        final long normalizedTime = (aMediaTime / myFrameSize) * myFrameSize;
+        final long normalizedTime = ( aMediaTime / myFrameSize ) * myFrameSize;
         final long mediaTime = Math.max( 0, Math.min( mySoundData.length, normalizedTime ) );
         return myMediaPosition = (int) mediaTime;
         }
@@ -110,9 +108,9 @@ public final class DirectPlayer implements Player, Runnable
         prefetch();
 
         if ( myMediaPosition == mySoundData.length ) myMediaPosition = 0;
-        if ( myThread.isAlive() == false ) myThread.start();
+        if ( !myThread.isAlive() ) myThread.start();
 
-        if ( myDataLine.isRunning() == false )
+        if ( !myDataLine.isRunning() )
             {
             myDataLine.start();
             notify();
@@ -173,19 +171,18 @@ public final class DirectPlayer implements Player, Runnable
 
     // Implementation
 
-    private final void streamSoundData()
+    private void streamSoundData()
         {
         final int mediaLength = mySoundData.length;
         while ( myMediaPosition < mediaLength )
             {
-            final int quarterSize = (myDataLine.getBufferSize() / 2 / myFrameSize) * myFrameSize;
+            final int quarterSize = ( myDataLine.getBufferSize() / 2 / myFrameSize ) * myFrameSize;
             final int writeSize = Math.min( quarterSize, mediaLength - myMediaPosition );
             myMediaPosition += myDataLine.write( mySoundData, myMediaPosition, writeSize );
             Thread.yield();
             }
         myDataLine.drain();
         }
-
 
 
     private int myLoopCount = 1;

@@ -1,32 +1,24 @@
-/************************************************************************/
-/* {{PROJECT_NAME}}             {{COMPANY}}             {{DATE_CREATE}} */
-/************************************************************************/
-
 package javax.microedition.media;
 
 import java.io.InputStream;
 
-
-
-/**
- * TODO: Describe this!
- */
 public final class Manager
     {
-    public static final String[] getSupportedContentTypes( final String aProtocol )
+    public static String[] getSupportedContentTypes( final String aProtocol )
         {
-        return new String[]{"audio/x-wav", "audio/mp3"};
+        return new String[]{ "audio/mid", "audio/x-wav", "audio/mpeg" };
         }
 
-    public static final String[] getSupportedProtocols( final String aContentType )
+    public static String[] getSupportedProtocols( final String aContentType )
         {
-        return new String[]{"http", "file"};
+        return new String[]{ "http", "file" };
         }
 
     public static Player createPlayer( final InputStream aInputStream, final String aContentType ) throws MediaException
         {
-        if ( aContentType.contains( "midi" ) ) return new MidiPlayer( aInputStream, aContentType );
-        else if ( aContentType.contains( "wav" ) ) return new DirectPlayer( aInputStream );
-        else throw new RuntimeException( "NYI" );
+        if ( aContentType.contains( "audio/mid" ) ) return new MidiPlayer( aInputStream, aContentType );
+        if ( aContentType.equals( "audio/x-wav" ) ) return new DirectPlayer( aInputStream );
+        if ( aContentType.equals( "audio/mpeg" ) ) return new DirectPlayer( aInputStream );
+        throw new RuntimeException( "NYI" );
         }
     }

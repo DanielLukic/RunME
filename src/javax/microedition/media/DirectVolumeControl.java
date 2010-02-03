@@ -1,17 +1,8 @@
-/************************************************************************/
-/* {{PROJECT_NAME}}             {{COMPANY}}             {{DATE_CREATE}} */
-/************************************************************************/
-
 package javax.microedition.media;
 
 import javax.microedition.media.control.VolumeControl;
 import javax.sound.sampled.FloatControl;
 
-
-
-/**
- * TODO: Describe this!
- */
 final class DirectVolumeControl implements VolumeControl
     {
     public DirectVolumeControl( final FloatControl aFloatControl )

@@ -14,7 +14,6 @@ public abstract class MIDlet
 
     public void notifyPaused()
         {
-        if ( frame != null ) frame.pause();
         }
 
     // Protected Interface

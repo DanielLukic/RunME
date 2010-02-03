@@ -2,10 +2,8 @@ package javax.microedition.lcdui;
 
 import java.awt.event.KeyEvent;
 
-
-
 public abstract class Canvas extends Displayable
-{
+    {
     public static final int DOWN = 6;
 
     public static final int LEFT = 2;
@@ -51,9 +49,9 @@ public abstract class Canvas extends Displayable
 
 
     public final int getGameAction( final int aCode )
-    {
-        switch ( aCode )
         {
+        switch ( aCode )
+            {
             case KeyEvent.VK_CONTROL:
                 return FIRE;
             case KeyEvent.VK_SPACE:
@@ -78,6 +76,18 @@ public abstract class Canvas extends Displayable
                 return DOWN;
             default:
                 return 0;
+            }
+        }
+
+    public void pointerPressed( int aX, int aY )
+        {
+        }
+
+    public void pointerReleased( int aX, int aY )
+        {
+        }
+
+    public void pointerDragged( int aX, int aY )
+        {
         }
     }
-}

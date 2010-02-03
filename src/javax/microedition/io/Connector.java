@@ -9,7 +9,7 @@ import java.io.*;
  */
 public final class Connector
 {
-    public static ConnectorImpl implementation = new EmulatingConnector();
+    public static ConnectorImpl implementationClass = new EmulatingConnector();
 
     public static final int READ = 1;
 
@@ -21,37 +21,37 @@ public final class Connector
 
     public static final Connection open( final String aString ) throws IOException
     {
-        return implementation.open( aString );
+        return implementationClass.open( aString );
     }
 
     public static final Connection open( final String aString, final int aMode ) throws IOException
     {
-        return implementation.open( aString, aMode );
+        return implementationClass.open( aString, aMode );
     }
 
     public static final Connection open( final String aURL, final int aMode, final boolean aTimeOut ) throws IOException
     {
-        return implementation.open( aURL, aMode, aTimeOut );
+        return implementationClass.open( aURL, aMode, aTimeOut );
     }
 
     public static final DataInputStream openDataInputStream( String aURL ) throws IOException
     {
-        return implementation.openDataInputStream( aURL );
+        return implementationClass.openDataInputStream( aURL );
     }
 
     public static final DataOutputStream openDataOutputStream( String aURL ) throws IOException
     {
-        return implementation.openDataOutputStream( aURL );
+        return implementationClass.openDataOutputStream( aURL );
     }
 
     public static final InputStream openInputStream( String aURL ) throws IOException
     {
-        return implementation.openInputStream( aURL );
+        return implementationClass.openInputStream( aURL );
     }
 
     public static final OutputStream openOutputStream( String aURL ) throws IOException
     {
-        return implementation.openOutputStream( aURL );
+        return implementationClass.openOutputStream( aURL );
     }
 
     // Implementation

@@ -1,39 +1,62 @@
 package javax.microedition.lcdui;
 
+import net.intensicode.runme.DisplayBuffer;
+
+import java.awt.Dimension;
+
 public abstract class Displayable
     {
-    public final void attach( final DisplayContext aListener )
+    public static DisplayBuffer displayBuffer;
+
+    public static Dimension displaySize;
+
+
+    // RunME API
+
+    public synchronized final void show()
         {
-        myContext = aListener;
+        if ( myVisibleFlag ) return;
+        myVisibleFlag = true;
+        showNotify();
         }
 
-    public final void detach()
+    public synchronized final void hide()
         {
-        myContext = null;
+        if ( !myVisibleFlag ) return;
+        myVisibleFlag = false;
+        hideNotify();
         }
+
+    // J2ME API
 
     public final void setFullScreenMode( final boolean aFullScreen )
         {
+        // We are always in full screen mode..
         }
 
     public int getWidth()
         {
-        if ( myContext == null ) return 240;
-        return myContext.displayWidth();
+        return displaySize.width;
         }
 
     public int getHeight()
         {
-        if ( myContext == null ) return 320;
-        return myContext.displayHeight();
+        return displaySize.height;
+        }
+
+    public boolean isShown()
+        {
+        return myVisibleFlag;
         }
 
     public void showNotify()
         {
+        if ( !myVisibleFlag ) throw new IllegalStateException();
         }
 
     public void hideNotify()
         {
+        if ( myVisibleFlag ) throw new IllegalStateException();
         }
 
     public void keyPressed( final int aKeyCode )
@@ -49,20 +72,10 @@ public abstract class Displayable
         return Integer.toString( aKeyCode );
         }
 
-    public void repaint()
-        {
-        if ( myContext == null ) return;
-
-        final Graphics graphics = myContext.displayGraphics();
-        paint( graphics );
-        if ( myContext != null ) myContext.onRepaintDone();
-        }
-
     // Protected Interface
 
     protected abstract void paint( final Graphics aGraphics );
 
 
-
-    private DisplayContext myContext;
+    private boolean myVisibleFlag;
     }

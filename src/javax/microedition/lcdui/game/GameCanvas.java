@@ -1,18 +1,9 @@
 package javax.microedition.lcdui.game;
 
-import javax.microedition.lcdui.Canvas;
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.*;
 
-
-
-/**
- * TODO: Describe this!
- */
 public class GameCanvas extends Canvas
     {
-    public boolean mySuppressKeyEvents = false;
-
     public GameCanvas( final boolean aSuppressKeyEvents )
         {
         mySuppressKeyEvents = aSuppressKeyEvents;
@@ -30,20 +21,24 @@ public class GameCanvas extends Canvas
 
     public final void flushGraphics()
         {
-        // In the RunME implementation this will directly call paint:
-        repaint();
+        final Graphics graphics = displayBuffer.beginFrame();
+        paint( graphics );
+        displayBuffer.endFrame();
         }
 
     // From Canvas
 
     protected final void paint( final Graphics aGraphics )
         {
-        aGraphics.drawImage( myBuffer, 0, 0, Graphics.TOP | Graphics.LEFT );
+        aGraphics.drawImage( myBuffer, 0, 0, ALIGN_TOP_LEFT );
         }
-
 
 
     private Image myBuffer;
 
     private Graphics myGraphics;
+
+    private boolean mySuppressKeyEvents = false;
+
+    private static final int ALIGN_TOP_LEFT = Graphics.TOP | Graphics.LEFT;
     }

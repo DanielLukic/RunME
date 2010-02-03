@@ -1,26 +1,24 @@
 package javax.microedition.lcdui;
 
+import net.intensicode.runme.DisplayContext;
 import net.intensicode.runme.util.Log;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
+import java.io.*;
 
 public final class Image
     {
-    public static GraphicsConfiguration target_gc;
+    public static DisplayContext theDisplayContext;
 
 
-    public static final Image createImage( final byte[] aData, final int aOffset, final int aLength ) throws IOException
+    public static Image createImage( final byte[] aData, final int aOffset, final int aLength ) throws IOException
         {
         return createImage( new ByteArrayInputStream( aData, aOffset, aLength ) );
         }
 
-    public static final Image createImage( final InputStream aInputStream ) throws IOException
+    public static Image createImage( final InputStream aInputStream ) throws IOException
         {
         if ( aInputStream == null ) throw new NullPointerException();
 
@@ -33,19 +31,13 @@ public final class Image
         return new Image( image, graphics );
         }
 
-    public static final Image createImage( final int aWidth, final int aHeight )
+    public static Image createImage( final int aWidth, final int aHeight )
         {
-        if ( target_gc != null )
-            {
-            return new Image( target_gc.createCompatibleImage( aWidth, aHeight, Transparency.TRANSLUCENT ) );
-            }
-        else
-            {
-            return new Image( new BufferedImage( aWidth, aHeight, BufferedImage.TYPE_INT_ARGB ) );
-            }
+        final GraphicsConfiguration configuration = theDisplayContext.getGraphicsConfiguration();
+        return new Image( configuration.createCompatibleImage( aWidth, aHeight, Transparency.TRANSLUCENT ) );
         }
 
-    public static final Image createImage( final Image aSource, final int aX, final int aY, final int aWidth, final int aHeight, final int aTransform )
+    public static Image createImage( final Image aSource, final int aX, final int aY, final int aWidth, final int aHeight, final int aTransform )
         {
         if ( aTransform != 0 ) throw new RuntimeException( "nyi" );
         final Image image = createImage( aWidth, aHeight );
@@ -53,10 +45,11 @@ public final class Image
         return image;
         }
 
-    public static final Image createRGBImage( final int[] aARGB32, final int aWidth, final int aHeight, final boolean aAlpha )
+    public static Image createRGBImage( final int[] aARGB32, final int aWidth, final int aHeight, final boolean aAlpha )
         {
         final int transparency = aAlpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE;
-        final BufferedImage image = target_gc.createCompatibleImage( aWidth, aHeight, transparency );
+        final GraphicsConfiguration configuration = theDisplayContext.getGraphicsConfiguration();
+        final BufferedImage image = configuration.createCompatibleImage( aWidth, aHeight, transparency );
         image.setRGB( 0, 0, aWidth, aHeight, aARGB32, 0, aWidth );
         return new Image( image );
         }
@@ -103,16 +96,11 @@ public final class Image
         myBufferedGraphics = new Graphics( aImage, aGraphics2D );
         }
 
-    private static final BufferedImage createBlitImage( final BufferedImage loaded )
+    private static BufferedImage createBlitImage( final BufferedImage loaded )
         {
-        if ( target_gc == null )
-            {
-            LOG.debug( "Creating slow image - no target_gc" );
-            return loaded;
-            }
-        return target_gc.createCompatibleImage( loaded.getWidth(), loaded.getHeight(), Transparency.TRANSLUCENT );
+        final GraphicsConfiguration configuration = theDisplayContext.getGraphicsConfiguration();
+        return configuration.createCompatibleImage( loaded.getWidth(), loaded.getHeight(), Transparency.TRANSLUCENT );
         }
-
 
 
     private final Graphics myBufferedGraphics;

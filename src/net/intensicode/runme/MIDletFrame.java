@@ -1,298 +1,173 @@
 package net.intensicode.runme;
 
-import net.intensicode.runme.util.Log;
-
-import javax.microedition.lcdui.DisplayContext;
-import javax.microedition.midlet.MIDlet;
-import javax.swing.*;
+import javax.swing.JFrame;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
-import java.util.*;
-import java.util.Timer;
 
-
-public final class MIDletFrame extends JFrame implements DisplayContext, KeyListener, FocusListener
+public final class MIDletFrame extends JFrame implements DisplayContext
     {
-    private final Timer myTimer = new Timer();
-
-    public MIDletFrame( final int aWidth, final int aHeight )
+    public MIDletFrame( final SystemContext aSystemContext )
         {
-        myDisplay = new MIDletDisplay( this, aWidth, aHeight );
-
+        mySystemContext = aSystemContext;
         setDefaultCloseOperation( EXIT_ON_CLOSE );
-        setFullScreenMode( false );
-
-        addKeyListener( this );
-        addFocusListener( this );
-        }
-
-    public final void start( final MIDlet aMIDlet )
-        {
-        if ( myContainer != null ) throw new IllegalStateException();
-
-        myContainer = new MIDletContainer( aMIDlet, myDisplay );
-        myContainer.start();
-
-        aMIDlet.frame = this;
-
-        final StringBuilder builder = new StringBuilder();
-        builder.append( aMIDlet.getClass().getSimpleName() );
-        builder.append( " (IntensiCode RunME) - www.intensicode.net / www.berlinfactor.com" );
-        setTitle( builder.toString() );
-        }
-
-    public final void pause()
-        {
-        if ( myPausedFlag ) return;
-        myPausedFlag = true;
         }
 
     // From DisplayContext
 
-    public final int displayWidth()
+    public final boolean isFullScreen()
         {
-        return myDisplay.width;
+        final GraphicsDevice device = getGraphicsDevice();
+        if ( device.isFullScreenSupported() ) return device.getFullScreenWindow() == this;
+
+        final DisplayMode mode = device.getDisplayMode();
+        return getX() == 0 && getY() == 0 && getWidth() == mode.getWidth() && getHeight() == mode.getHeight();
         }
 
-    public final int displayHeight()
+    public final GraphicsDevice getGraphicsDevice()
         {
-        return myDisplay.height;
+        final GraphicsDevice device = getGraphicsConfiguration().getDevice();
+        if ( device == null ) throw new IllegalStateException();
+        return device;
         }
 
-    public final synchronized javax.microedition.lcdui.Graphics displayGraphics()
+    public final GraphicsConfiguration getGraphicsConfiguration()
         {
-        if ( myDisplayBuffer == null )
-            {
-            myDisplayBuffer = createVolatileImage( myDisplay.width, myDisplay.height );
-            myMIDletGraphics = new javax.microedition.lcdui.Graphics( myDisplayBuffer );
-            }
-        return myMIDletGraphics;
+        final GraphicsConfiguration configuration = super.getGraphicsConfiguration();
+        if ( configuration == null ) throw new IllegalStateException();
+        return configuration;
         }
 
-    public final synchronized void onRepaintDone()
+    public final void showTitleAndBorder()
         {
-        if ( myDisplayBuffer == null ) return;
-
-        final BufferStrategy strategy = getBufferStrategy();
-        if ( strategy == null )
-            {
-            createBufferStrategy( 2 );
-            return;
-            }
-
-        try
-            {
-            final Graphics graphics = strategy.getDrawGraphics();
-            if ( graphics == null ) return;
-
-            try
-                {
-                if ( myDisplayBuffer.contentsLost() ) return;
-                if ( strategy.contentsLost() ) return;
-
-                paint( graphics, myDisplayBuffer );
-                strategy.show();
-                }
-            finally
-                {
-                graphics.dispose();
-                }
-            }
-        catch ( final Throwable t )
-            {
-            LOG.debug( "X exception: {}", t );
-            createBufferStrategy( 1 );
-            }
+        setUndecorated( false );
         }
 
-    // From FocusListener
-
-    public void focusGained( final FocusEvent e )
+    public final void hideTitleAndBorder()
         {
-        myContainer.setVisible( true );
-        if ( myPausedFlag )
-            {
-            LOG.debug( "MIDletFrame resuming MIDlet after pause" );
-            myPausedFlag = false;
-            myContainer.start();
-            }
+        setUndecorated( true );
         }
 
-    public void focusLost( final FocusEvent e )
+    public final void showAndFocus()
         {
-        myContainer.setVisible( false );
+        setVisible( true );
+        requestFocus();
         }
 
-    // From KeyListener
-
-    public final void keyPressed( final KeyEvent aKeyEvent )
+    public final void hideAndDispose()
         {
-        if ( aKeyEvent.getKeyCode() == KeyEvent.VK_ENTER )
-            {
-            if ( aKeyEvent.getModifiersEx() == KeyEvent.ALT_DOWN_MASK )
-                {
-                toggleFullScreenMode();
-                return;
-                }
-            }
-
-        if ( myContainer != null ) myContainer.keyPressed( aKeyEvent );
+        setVisible( false );
+        dispose();
         }
 
-    public final void keyReleased( final KeyEvent aKeyEvent )
+    public final void makeFullScreen()
         {
-        if ( myContainer != null ) myContainer.keyReleased( aKeyEvent );
+        final GraphicsDevice device = getGraphicsDevice();
+        if ( device.isFullScreenSupported() ) device.setFullScreenWindow( this );
+
+        final DisplayMode displayMode = device.getDisplayMode();
+        setBounds( 0, 0, displayMode.getWidth(), displayMode.getHeight() );
         }
 
-    public final void keyTyped( final KeyEvent aKeyEvent )
+    public final void unmakeFullScreen()
         {
-        if ( myContainer != null ) myContainer.keyTyped( aKeyEvent );
+        final GraphicsDevice device = getGraphicsDevice();
+        if ( device.isFullScreenSupported() ) device.setFullScreenWindow( null );
+        }
+
+    public final void centerAndResizeTo( final int aWidth, final int aHeight )
+        {
+        final GraphicsDevice device = getGraphicsDevice();
+        final DisplayMode mode = device.getDisplayMode();
+        final Insets insets = getInsets();
+        final int width = aWidth + insets.left + insets.right;
+        final int height = aHeight + insets.top + insets.bottom;
+        final int x = ( mode.getWidth() - width ) / 2;
+        final int y = ( mode.getHeight() - height ) / 2;
+        setBounds( x, y, width, height );
+        }
+
+    // From Window
+
+    public final void setVisible( final boolean aVisibleFlag )
+        {
+        if ( aVisibleFlag ) updateTitle();
+        super.setVisible( aVisibleFlag );
+        }
+
+    // From Container
+
+    public final void paint( final Graphics aGraphics )
+        {
+        final DisplayTransformation transformation = mySystemContext.displayTransformation;
+        updateDisplayTransformation( transformation );
+
+        final Dimension size = getInnerScreenSize();
+
+        final Insets insets = getInsets();
+        final int x = transformation.xOffset - insets.left;
+        final int y = transformation.yOffset - insets.top;
+
+        aGraphics.translate( insets.left, insets.top );
+
+        aGraphics.setColor( Color.DARK_GRAY );
+        aGraphics.fillRect( 0, 0, x, size.height );
+        aGraphics.fillRect( 0, 0, size.width, y );
+        aGraphics.fillRect( x + transformation.scaledWidth, 0, size.width - x - transformation.scaledWidth, size.height );
+        aGraphics.fillRect( 0, y + transformation.scaledHeight, size.width, size.height - y - transformation.scaledHeight );
+
+        aGraphics.translate( -insets.left, -insets.top );
+
+        final DisplayBuffer buffer = mySystemContext.displayBuffer;
+        buffer.renderInto( aGraphics, transformation.xOffset, transformation.yOffset, transformation.scaledWidth, transformation.scaledHeight );
         }
 
     // Implementation
 
-    private synchronized void toggleFullScreenMode()
+    private void updateTitle()
         {
-        final boolean isInFullScreenMode = getGraphicsDevice().getFullScreenWindow() == this;
-        if ( isInFullScreenMode ) setFullScreenMode( false );
-        else setFullScreenMode( true );
+        final StringBuilder builder = new StringBuilder();
+        builder.append( mySystemContext.midlet.getClass().getSimpleName() );
+        builder.append( " (IntensiCode RunME) - www.intensicode.net / www.berlinfactor.com" );
+        setTitle( builder.toString() );
         }
 
-    private void setFullScreenMode( final boolean aFullScreenFlag )
-        {
-        if ( myContainer != null ) myContainer.setVisible( false );
-        setVisible( false );
-        dispose();
-
-        if ( myMIDletGraphics != null ) myMIDletGraphics.dispose();
-        myMIDletGraphics = null;
-        myDisplayBuffer = null;
-
-        if ( aFullScreenFlag ) activateFullScreenMode();
-        else activateWindowedMode();
-
-        javax.microedition.lcdui.Image.target_gc = getGraphicsConfiguration();
-
-        myTimer.schedule( new FocusStealerTask(), FOCUS_STEAL_INTERVAL );
-        }
-
-    private static final int FOCUS_STEAL_INTERVAL = 250; // millis - more than enough - 50 would do, too
-
-    public final class FocusStealerTask extends TimerTask
-        {
-        public void run()
-            {
-            if ( hasFocus() ) return;
-            requestFocus( false );
-            requestFocusInWindow( false );
-            if ( hasFocus() ) return;
-            myTimer.schedule( new FocusStealerTask(), FOCUS_STEAL_INTERVAL );
-            }
-        }
-
-    private void activateWindowedMode()
-        {
-        setUndecorated( false );
-        setIgnoreRepaint( true );
-
-        getGraphicsDevice().setFullScreenWindow( null );
-
-        centerFrame();
-        setVisible( true );
-        setCursor( Cursor.getDefaultCursor() );
-        }
-
-    private void activateFullScreenMode()
-        {
-        setUndecorated( true );
-        setIgnoreRepaint( true );
-
-        final GraphicsDevice device = getGraphicsDevice();
-        device.setFullScreenWindow( this );
-
-        final DisplayMode displayMode = device.getDisplayMode();
-        setBounds( 0, 0, displayMode.getWidth(), displayMode.getHeight() );
-
-        setVisible( true );
-        setCursor( getEmptyCursor() );
-        }
-
-    private void centerFrame()
-        {
-        final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        final DisplayMode displayMode = ge.getDefaultScreenDevice().getDisplayMode();
-
-        LOG.debug( "Max win bounds: {}", ge.getMaximumWindowBounds() );
-        LOG.debug( "Screen width: {}", displayMode.getWidth() );
-        LOG.debug( "Screen height: {}", displayMode.getHeight() );
-
-        final int screenWidth = displayMode.getWidth();
-        final int screenHeight = displayMode.getHeight();
-
-        final int width = screenWidth * 2 / 3;
-        final int height = screenHeight * 2 / 3;
-        final int x = ( screenWidth - width ) / 2;
-        final int y = ( screenHeight - height ) / 2;
-        setBounds( x, y, width, height );
-        }
-
-    private void paint( final Graphics aGraphics, final VolatileImage aImage )
+    private Dimension getInnerScreenSize()
         {
         final Insets insets = getInsets();
-        aGraphics.translate( insets.left, insets.top );
+        myInnerScreenSize.width = getWidth() - insets.left - insets.right;
+        myInnerScreenSize.height = getHeight() - insets.top - insets.bottom;
+        return myInnerScreenSize;
+        }
 
-        final int imageWidth = aImage.getWidth();
-        final int imageHeight = aImage.getHeight();
-        final int screenWidth = getWidth() - insets.left - insets.right;
-        final int screenHeight = getHeight() - insets.top - insets.bottom;
-        final float xScale = screenWidth * 1.0f / imageWidth;
-        final float yScale = screenHeight * 1.0f / imageHeight;
+    private void updateDisplayTransformation( final DisplayTransformation aDisplayTransformation )
+        {
+        final DisplayBuffer buffer = mySystemContext.displayBuffer;
+        final int bufferWidth = buffer.width();
+        final int bufferHeight = buffer.height();
+
+        final Dimension screenSize = getInnerScreenSize();
+
+        final float xScale = screenSize.width * 1.0f / bufferWidth;
+        final float yScale = screenSize.height * 1.0f / bufferHeight;
         final float scale = Math.min( xScale, yScale );
-        final int width = (int) ( imageWidth * scale );
-        final int height = (int) ( imageHeight * scale );
-        final int x = ( screenWidth - width ) / 2;
-        final int y = ( screenHeight - height ) / 2;
-        aGraphics.setColor( Color.DARK_GRAY );
-        aGraphics.fillRect( 0, 0, x, screenHeight );
-        aGraphics.fillRect( 0, 0, screenWidth, y );
-        aGraphics.fillRect( x + width, 0, screenWidth - x - width, screenHeight );
-        aGraphics.fillRect( 0, y + height, screenWidth, screenHeight - y - height );
-        aGraphics.drawImage( aImage, x, y, width, height, null );
 
-        aGraphics.translate( -insets.left, -insets.top );
+        final int scaledWidth = (int) ( bufferWidth * scale );
+        final int scaledHeight = (int) ( bufferHeight * scale );
+        final int x = ( screenSize.width - scaledWidth ) / 2;
+        final int y = ( screenSize.height - scaledHeight ) / 2;
+
+        final Insets insets = getInsets();
+        aDisplayTransformation.xOffset = x + insets.left;
+        aDisplayTransformation.yOffset = y + insets.top;
+        aDisplayTransformation.scaledWidth = scaledWidth;
+        aDisplayTransformation.scaledHeight = scaledHeight;
+        aDisplayTransformation.scale = scale;
+        aDisplayTransformation.valid = true;
         }
 
-    private GraphicsDevice getGraphicsDevice()
-        {
-        return getGraphicsConfiguration().getDevice();
-        }
-
-    private Cursor getEmptyCursor()
-        {
-        if ( myEmptyCursor == null )
-            {
-            final Point hotSpot = new Point( 0, 0 );
-            final BufferedImage emptyImage = new BufferedImage( 1, 1, BufferedImage.TYPE_INT_ARGB );
-            myEmptyCursor = Toolkit.getDefaultToolkit().createCustomCursor( emptyImage, hotSpot, "INVISIBLE" );
-            }
-        return myEmptyCursor;
-        }
-
-
-    private boolean myPausedFlag;
-
-    private Cursor myEmptyCursor;
 
     private MIDletContainer myContainer;
 
-    private VolatileImage myDisplayBuffer;
+    private final SystemContext mySystemContext;
 
-    private final MIDletDisplay myDisplay;
-
-    private javax.microedition.lcdui.Graphics myMIDletGraphics;
-
-    private static final Log LOG = Log.create();
+    private final Dimension myInnerScreenSize = new Dimension();
     }

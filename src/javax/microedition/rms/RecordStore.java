@@ -1,16 +1,8 @@
 package javax.microedition.rms;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.util.HashMap;
 
-
-
-/**
- * TODO: Describe this!
- */
 public final class RecordStore
     {
     public static final void deleteRecordStore( final String aName )
@@ -118,7 +110,6 @@ public final class RecordStore
             }
         aFileOrDirectory.delete();
         }
-
 
 
     private int openCount = 0;
