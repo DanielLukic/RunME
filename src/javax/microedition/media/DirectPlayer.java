@@ -48,6 +48,10 @@ public final class DirectPlayer implements Player, Runnable
             myThread = new Thread( this );
             myThread.setDaemon( true );
             }
+        catch ( final LineUnavailableException e )
+            {
+            throw new MediaException( "no sound device available" ); // AudioManager.ERROR_NO_SOUND_DEVICE_AVAILABLE
+            }
         catch ( final Throwable t )
             {
             //#if DEBUG
