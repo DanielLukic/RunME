@@ -11,17 +11,6 @@ public final class DirectPlayer implements Player, Runnable
         {
         if ( aInputStream == null ) throw new NullPointerException();
 
-        final Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
-        for ( int idx = 0; idx < mixerInfos.length; idx++ )
-            {
-            LOG.debug( "Mixer info: {}", mixerInfos[ idx ] );
-            }
-
-        for ( final AudioFileFormat.Type type : AudioSystem.getAudioFileTypes() )
-            {
-            LOG.debug( "Audio type: {}", type );
-            }
-
         try
             {
             final BufferedInputStream bufferedInputStream = new BufferedInputStream( aInputStream );

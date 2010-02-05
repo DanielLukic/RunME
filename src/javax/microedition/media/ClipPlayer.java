@@ -47,6 +47,10 @@ public final class ClipPlayer implements Player
                     }
                 }
             }
+        catch ( final LineUnavailableException e )
+            {
+            throw new MediaException( "no sound device available" ); // AudioManager.ERROR_NO_SOUND_DEVICE_AVAILABLE
+            }
         catch ( final Throwable t )
             {
             //#if DEBUG
@@ -87,17 +91,16 @@ public final class ClipPlayer implements Player
 
     public synchronized final long setMediaTime( final long aMediaTime )
         {
-        throw new RuntimeException( "nyi" );
+        myClip.setMicrosecondPosition( aMediaTime );
+        return aMediaTime;
         }
 
     public final void realize()
         {
-        throw new RuntimeException( "nyi" );
         }
 
     public final void prefetch()
         {
-        throw new RuntimeException( "nyi" );
         }
 
     public synchronized final void start()
@@ -117,7 +120,6 @@ public final class ClipPlayer implements Player
 
     public final void deallocate()
         {
-        throw new RuntimeException( "nyi" );
         }
 
     public final void addPlayerListener( final PlayerListener aPlayerListener )

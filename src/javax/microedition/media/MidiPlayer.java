@@ -1,21 +1,9 @@
-/************************************************************************/
-/* {{PROJECT_NAME}}             {{COMPANY}}             {{DATE_CREATE}} */
-/************************************************************************/
-
 package javax.microedition.media;
 
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Synthesizer;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import javax.sound.midi.*;
+import java.io.*;
 
 
-
-/**
- * TODO: Describe this!
- */
 public final class MidiPlayer implements Player
     {
     public MidiPlayer( final InputStream aInputStream, final String aContentType ) throws MediaException
@@ -93,8 +81,8 @@ public final class MidiPlayer implements Player
         {
         if ( myState >= STARTED ) return;
 
-        mySequencer.setTickPosition( 0 );
-        mySequencer.start();
+        if ( mySequencer != null ) mySequencer.setTickPosition( 0 );
+        if ( mySequencer != null ) mySequencer.start();
         myState = STARTED;
         }
 
@@ -102,7 +90,7 @@ public final class MidiPlayer implements Player
         {
         if ( myState != STARTED ) return;
 
-        mySequencer.stop();
+        if ( mySequencer != null ) mySequencer.stop();
         myState = PREFETCHED;
         }
 
@@ -110,7 +98,7 @@ public final class MidiPlayer implements Player
         {
         if ( myState == CLOSED ) return;
 
-        mySequencer.close();
+        if ( mySequencer != null ) mySequencer.close();
         mySequencer = null;
         myState = CLOSED;
         }
@@ -128,7 +116,6 @@ public final class MidiPlayer implements Player
     public final void removePlayerListener( final PlayerListener aPlayerListener )
         {
         }
-
 
 
     private Sequencer mySequencer;
