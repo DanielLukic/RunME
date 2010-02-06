@@ -31,10 +31,6 @@ public final class Manager
 
     public static Player createPlayer( final InputStream aInputStream, final String aContentType ) throws MediaException
         {
-        for ( final AudioFileFormat.Type type : AudioSystem.getAudioFileTypes() )
-            {
-            Log.debug( "audio file type: {}", type );
-            }
         if ( aContentType.contains( "audio/mid" ) ) return new MidiPlayer( aInputStream, aContentType );
         if ( aContentType.equals( "audio/x-wav" ) ) return new ClipPlayer( aInputStream );
         if ( aContentType.equals( "audio/mpeg" ) ) return new ClipPlayer( aInputStream );

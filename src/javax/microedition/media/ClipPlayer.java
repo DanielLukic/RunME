@@ -11,24 +11,6 @@ public final class ClipPlayer implements Player
         {
         if ( aInputStream == null ) throw new NullPointerException();
 
-        for ( final AudioFileFormat.Type type : AudioSystem.getAudioFileTypes() )
-            {
-            LOG.debug( "Audio type: {}", type );
-            }
-
-        final Mixer.Info[] mixerInfos = AudioSystem.getMixerInfo();
-        for ( final Mixer.Info info : mixerInfos )
-            {
-            LOG.debug( "Mixer info: {}", info );
-            }
-
-        final Mixer mixer = AudioSystem.getMixer( mixerInfos[ 0 ] );
-        final Line.Info[] lineInfos = mixer.getSourceLineInfo();
-        for ( final Line.Info info : lineInfos )
-            {
-            LOG.debug( "Line info: {}", info );
-            }
-
         try
             {
             final BufferedInputStream bufferedInputStream = new BufferedInputStream( aInputStream );

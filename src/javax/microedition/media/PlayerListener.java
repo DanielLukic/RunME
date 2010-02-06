@@ -1,8 +1,5 @@
 package javax.microedition.media;
 
-/**
- * TODO: Describe this!
- */
 public interface PlayerListener
     {
     String STARTED = "started";
