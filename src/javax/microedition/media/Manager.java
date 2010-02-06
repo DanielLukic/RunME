@@ -34,7 +34,7 @@ public final class Manager
         if ( aContentType.contains( "audio/mid" ) ) return new MidiPlayer( aInputStream, aContentType );
         if ( aContentType.equals( "audio/x-wav" ) ) return new ClipPlayer( aInputStream );
         if ( aContentType.equals( "audio/mpeg" ) ) return new ClipPlayer( aInputStream );
-        if ( aContentType.equals( "audio/ogg" ) ) return new ClipPlayer( aInputStream );
+        if ( aContentType.equals( "audio/ogg" ) ) return OggPlayer.create( aInputStream );
         throw new RuntimeException( "NYI" );
         }
     }
