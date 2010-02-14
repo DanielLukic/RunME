@@ -1,0 +1,12 @@
+CHANGES
+-------
+
+v0.2 (2006-03-03)
+-----------------
+- Fixed small bugs.
+- Renamed project to MuLine (was MuSound Core)
+
+
+v0.1 (2004-10-07)
+-----------------
+- Initial version

@@ -26,9 +26,9 @@ public interface Player extends Controllable
 
     void stop() throws MediaException;
 
-    void close() throws MediaException;
+    void deallocate();
 
-    void deallocate() throws MediaException;
+    void close();
 
     int getState();
 
