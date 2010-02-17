@@ -142,7 +142,7 @@ public final class MuxmPlayer implements Player
 
     private boolean isStarted()
         {
-        return myPlayerState != STARTED;
+        return myPlayerState == STARTED;
         }
 
     private void tryToRealizePlayer() throws MediaException
