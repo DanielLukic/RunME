@@ -2,6 +2,7 @@ package javax.microedition.media;
 
 import net.intensicode.runme.util.Log;
 
+import javax.microedition.media.control.VolumeControl;
 import javax.sound.sampled.*;
 import java.io.InputStream;
 
@@ -36,5 +37,18 @@ public final class Manager
         if ( aContentType.equals( "audio/mod" ) ) return new MuxmPlayer( aInputStream );
         if ( aContentType.equals( "audio/xm" ) ) return new MuxmPlayer( aInputStream );
         return new ClipPlayer( aInputStream );
+        }
+
+    public static VolumeControl findVolumeControl( final javax.sound.sampled.Control[] controls )
+        {
+        for ( final javax.sound.sampled.Control control : controls )
+            {
+            final String controlInfo = control.toString().toLowerCase();
+            if ( controlInfo.contains( "gain" ) || controlInfo.contains( "volume" ) )
+                {
+                return new DirectVolumeControl( (FloatControl) control );
+                }
+            }
+        return new FakeVolumeControl();
         }
     }

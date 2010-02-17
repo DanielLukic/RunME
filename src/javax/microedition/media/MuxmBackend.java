@@ -4,6 +4,7 @@ import net.intensicode.runme.util.Log;
 
 import javax.microedition.media.control.VolumeControl;
 import javax.sound.sampled.*;
+import javax.sound.sampled.Control;
 import java.io.*;
 
 public final class MuxmBackend implements Runnable
@@ -44,15 +45,7 @@ public final class MuxmBackend implements Runnable
 
     public final void createVolumeControl()
         {
-        for ( final javax.sound.sampled.Control control : myPlaybackLine.getControls() )
-            {
-            final String controlInfo = control.toString().toLowerCase();
-            if ( controlInfo.contains( "gain" ) || controlInfo.contains( "volume" ) )
-                {
-                volumeControl = new DirectVolumeControl( (FloatControl) control );
-                }
-            }
-        if ( volumeControl == null ) volumeControl = new FakeVolumeControl();
+        volumeControl = Manager.findVolumeControl( myPlaybackLine.getControls() );
         }
 
     public final void createPlaybackStream()

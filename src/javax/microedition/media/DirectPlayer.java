@@ -2,6 +2,7 @@ package javax.microedition.media;
 
 import net.intensicode.runme.util.Log;
 
+import javax.microedition.media.control.VolumeControl;
 import javax.sound.sampled.*;
 import java.io.*;
 
@@ -26,13 +27,7 @@ public final class DirectPlayer implements Player, Runnable
             final int sourceFrameSize = myDataLine.getFormat().getFrameSize();
             myFrameSize = ( sourceFrameSize == AudioSystem.NOT_SPECIFIED ) ? 4 : sourceFrameSize;
 
-            for ( final javax.sound.sampled.Control c : myDataLine.getControls() )
-                {
-                if ( c.getType().toString().equals( "Master Gain" ) )
-                    {
-                    myVolumeControl = new DirectVolumeControl( (FloatControl) c );
-                    }
-                }
+            myVolumeControl = Manager.findVolumeControl( myDataLine.getControls() );
 
             myThread = new Thread( this );
             myThread.setDaemon( true );
@@ -185,7 +180,7 @@ public final class DirectPlayer implements Player, Runnable
 
     private final Thread myThread;
 
-    private DirectVolumeControl myVolumeControl;
+    private VolumeControl myVolumeControl;
 
 
     private final int myFrameSize;
