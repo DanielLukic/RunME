@@ -46,12 +46,13 @@ public final class MuxmBackend implements Runnable
         {
         for ( final javax.sound.sampled.Control control : myPlaybackLine.getControls() )
             {
-            if ( control.getType().toString().equals( "Master Gain" ) )
+            final String controlInfo = control.toString().toLowerCase();
+            if ( controlInfo.contains( "gain" ) || controlInfo.contains( "volume" ) )
                 {
                 volumeControl = new DirectVolumeControl( (FloatControl) control );
                 }
             }
-        volumeControl = new FakeVolumeControl();
+        if ( volumeControl == null ) volumeControl = new FakeVolumeControl();
         }
 
     public final void createPlaybackStream()
