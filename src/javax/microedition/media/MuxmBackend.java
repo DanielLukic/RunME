@@ -15,7 +15,6 @@ public final class MuxmBackend implements Runnable
     public MuxmBackend( final InputStream aInputStream ) throws IOException
         {
         myModData = ResourceLoader.loadStream( aInputStream );
-        myThread = new Thread( this );
         }
 
     public final void createModuleDataStream() throws UnsupportedAudioFileException, IOException
@@ -55,7 +54,9 @@ public final class MuxmBackend implements Runnable
 
     public final void startPlayback()
         {
-        if ( !myThread.isAlive() ) myThread.start();
+        if ( myThread != null ) return;
+        myThread = new Thread( this );
+        myThread.start();
         }
 
     public final void pausePlayback() throws InterruptedException
@@ -63,6 +64,7 @@ public final class MuxmBackend implements Runnable
         myBailOutFlag = true;
         myThread.interrupt();
         myThread.join();
+        myThread = null;
         }
 
     public final void disposePlaybackStream()
@@ -160,6 +162,8 @@ public final class MuxmBackend implements Runnable
         }
 
 
+    private Thread myThread;
+
     private boolean myBailOutFlag;
 
     private AudioFormat myPlaybackFormat;
@@ -169,8 +173,6 @@ public final class MuxmBackend implements Runnable
     private AudioInputStream myPlaybackStream;
 
     private AudioInputStream myModuleStream;
-
-    private final Thread myThread;
 
     private final byte[] myModData;
 
