@@ -3,12 +3,8 @@ package javax.microedition.io;
 import java.io.IOException;
 
 
-
-/**
- * TODO: Describe this!
- */
 public interface HttpConnection extends ContentConnection
-{
+    {
     String HEAD = "HEAD";
 
     String GET = "GET";
@@ -132,4 +128,4 @@ public interface HttpConnection extends ContentConnection
     String getHeaderField( int i ) throws IOException;
 
     String getHeaderFieldKey( int i ) throws IOException;
-}
+    }

@@ -1,17 +1,8 @@
-/************************************************************************/
-/* {{PROJECT_NAME}}             {{COMPANY}}             {{DATE_CREATE}} */
-/************************************************************************/
-
 package javax.microedition.lcdui.game;
 
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.*;
 
 
-
-/**
- * TODO: Describe this!
- */
 public final class Sprite
     {
     public Sprite( final Image aImage, final int aFrameWidth, final int aFrameHeight )

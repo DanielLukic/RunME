@@ -5,10 +5,6 @@ import net.intensicode.runme.chooser.MIDletChooserFrame;
 import java.io.File;
 
 
-
-/**
- * TODO: Describe this!
- */
 public final class MIDletChooser
     {
     public static void main( final String[] aArguments ) throws Throwable
