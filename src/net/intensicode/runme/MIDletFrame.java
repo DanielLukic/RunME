@@ -75,14 +75,15 @@ public final class MIDletFrame extends JFrame implements DisplayContext
 
     public final void centerAndResizeTo( final int aWidth, final int aHeight )
         {
+        getContentPane().setPreferredSize( new Dimension( aWidth, aHeight ) );
+        pack();
+
         final GraphicsDevice device = getGraphicsDevice();
         final DisplayMode mode = device.getDisplayMode();
-        final Insets insets = getInsets();
-        final int width = aWidth + insets.left + insets.right;
-        final int height = aHeight + insets.top + insets.bottom;
-        final int x = ( mode.getWidth() - width ) / 2;
-        final int y = ( mode.getHeight() - height ) / 2;
-        setBounds( x, y, width, height );
+        final Dimension frameSize = getSize();
+        final int x = ( mode.getWidth() - frameSize.width ) / 2;
+        final int y = ( mode.getHeight() - frameSize.height ) / 2;
+        setBounds( x, y, frameSize.width, frameSize.height );
         }
 
     // From Window
