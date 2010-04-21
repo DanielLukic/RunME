@@ -1,6 +1,9 @@
 package javax.microedition.midlet;
 
 import net.intensicode.runme.MIDletFrame;
+import net.intensicode.runme.util.Log;
+
+import java.io.IOException;
 
 public abstract class MIDlet
     {
@@ -14,6 +17,20 @@ public abstract class MIDlet
 
     public void notifyPaused()
         {
+        }
+
+    public final boolean platformRequest( final String aURL )
+        {
+        try
+            {
+            Runtime.getRuntime().exec( "firefox " + aURL );
+            return true;
+            }
+        catch ( final IOException e )
+            {
+            Log.error( e );
+            return false;
+            }
         }
 
     // Protected Interface
