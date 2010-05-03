@@ -18,14 +18,25 @@ public final class EmulatingConnector implements ConnectorImpl
 
     public final Connection open( final String aURL, final int aMode, final boolean aTimeOut ) throws IOException
         {
-        final URL url = new URL( aURL );
-        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setConnectTimeout( CONNECT_TIME_OUT );
-        connection.setDoInput( ( aMode & Connector.READ ) == Connector.READ );
-        connection.setDoOutput( ( aMode & Connector.WRITE ) == Connector.WRITE );
-        connection.setReadTimeout( READ_TIME_OUT );
-        connection.setUseCaches( false );
-        return new WrappedHttpConnection( connection );
+        if ( aURL.startsWith( "socket://" ) )
+            {
+            return new SocketConnectionImpl( aURL, aMode, aTimeOut );
+            }
+        else if ( aURL.startsWith( "http://" ) || aURL.startsWith( "https://" ) )
+            {
+            final URL url = new URL( aURL );
+            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout( CONNECT_TIME_OUT );
+            connection.setDoInput( ( aMode & Connector.READ ) == Connector.READ );
+            connection.setDoOutput( ( aMode & Connector.WRITE ) == Connector.WRITE );
+            connection.setReadTimeout( READ_TIME_OUT );
+            connection.setUseCaches( false );
+            return new WrappedHttpConnection( connection );
+            }
+        else
+            {
+            throw new IllegalArgumentException( "unsupported protocol: " + aURL );
+            }
         }
 
     public final DataInputStream openDataInputStream( final String aURL ) throws IOException
