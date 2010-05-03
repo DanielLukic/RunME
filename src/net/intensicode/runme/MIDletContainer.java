@@ -1,7 +1,5 @@
 package net.intensicode.runme;
 
-import net.intensicode.runme.util.Log;
-
 import javax.microedition.midlet.MIDlet;
 import java.lang.reflect.Method;
 
@@ -35,7 +33,6 @@ public final class MIDletContainer
             {
             final Method method = aObject.getClass().getMethod( aMethodName );
             method.invoke( aObject );
-            LOG.debug( "Called {} with {}", aObject, aMethodName );
             }
         catch ( final Throwable t )
             {
@@ -45,6 +42,4 @@ public final class MIDletContainer
 
 
     private final MIDlet myMIDlet;
-
-    private static final Log LOG = Log.create();
     }
