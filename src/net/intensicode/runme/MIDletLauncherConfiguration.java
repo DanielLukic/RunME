@@ -5,7 +5,7 @@ import net.intensicode.runme.util.*;
 import javax.microedition.io.ConnectorImpl;
 import java.awt.*;
 import java.io.InputStream;
-import java.util.Properties;
+import java.util.*;
 
 public final class MIDletLauncherConfiguration
     {
@@ -51,7 +51,33 @@ public final class MIDletLauncherConfiguration
 
     public final String[] determineListOfResourcesFolders()
         {
-        return myOptions.getList( ARGUMENT_RESOURCES, EMPTY_LIST_OF_RESOURCES_FOLDERS );
+        final ArrayList<String> expandedPathes = new ArrayList<String>();
+
+        final String[] listOfResourcePathes = myOptions.getList( ARGUMENT_RESOURCES, EMPTY_LIST_OF_RESOURCES_FOLDERS );
+        for ( int idx = 0; idx < listOfResourcePathes.length; idx++ )
+            {
+            expandedPathes.addAll( expandPath( listOfResourcePathes[ idx ] ) );
+            }
+
+        return expandedPathes.toArray( new String[expandedPathes.size()] );
+        }
+
+    private ArrayList<String> expandPath( final String aResourcePath )
+        {
+        final ArrayList<String> expandedPathes = new ArrayList<String>();
+
+        final StringBuffer buffer = new StringBuffer( aResourcePath );
+        while ( buffer.length() > 0 )
+            {
+            expandedPathes.add( buffer.toString() );
+
+            final int lastSlash = buffer.lastIndexOf( "/" );
+            if ( lastSlash == -1 ) break;
+
+            buffer.delete( lastSlash, buffer.length() );
+            }
+
+        return expandedPathes;
         }
 
     public final GraphicsConfiguration determineGraphicsConfiguration()
