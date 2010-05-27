@@ -36,6 +36,11 @@ public abstract class Display
         return myDisplays.get( aMidlet );
         }
 
+    public void setCurrent( final Alert aAlert, final Displayable aDisplayable )
+        {
+        aAlert.showNativeDialog();
+        }
+
     public void setCurrent( final Displayable aDisplayable )
         {
         if ( myDisplayable != null ) myDisplayable.hide();
