@@ -127,7 +127,7 @@ public final class MIDletFrame extends JFrame implements DisplayContext
         {
         final StringBuilder builder = new StringBuilder();
         builder.append( mySystemContext.midlet.getClass().getSimpleName() );
-        builder.append( " (IntensiCode RunME) - www.intensicode.net / www.berlinfactor.com" );
+        builder.append( " (IntensiCode RunME)" );
         setTitle( builder.toString() );
         }
 
