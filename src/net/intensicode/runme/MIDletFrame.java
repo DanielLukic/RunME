@@ -38,7 +38,7 @@ public final class MIDletFrame extends JFrame implements DisplayContext
 
     public final void showTitleAndBorder()
         {
-        setUndecorated( false );
+        setUndecorated( MIDletDisplayBuffer.capture );
         }
 
     public final void hideTitleAndBorder()
