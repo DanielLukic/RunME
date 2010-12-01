@@ -11,6 +11,8 @@ public final class MIDletDisplayBuffer implements DisplayBuffer
     {
     public static final boolean capture = false;
 
+    public static final int captureFrameSkip = 2;
+
     public MIDletDisplayBuffer( final SystemContext aSystemContext, final Dimension aEmulatedDisplaySize )
         {
         mySystemContext = aSystemContext;
@@ -54,12 +56,11 @@ public final class MIDletDisplayBuffer implements DisplayBuffer
         {
         try
             {
+            myCaptureCounter++;
+            if ( myCaptureCounter % ( captureFrameSkip + 1 ) != 0 ) return;
+
             createCaptureFolderIfNecessary();
             createCaptureImageIfNecessary();
-
-            myCaptureCounter++;
-            if ( myCaptureCounter % 4 != 0 ) return;
-
             captureImage();
             writeCapturedImage();
             }
