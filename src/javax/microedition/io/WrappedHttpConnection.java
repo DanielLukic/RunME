@@ -163,7 +163,7 @@ final class WrappedHttpConnection implements HttpConnection
 
     public final void close() throws IOException
         {
-        throw new RuntimeException( "NYI" );
+        myConnection.disconnect();
         }
 
 
