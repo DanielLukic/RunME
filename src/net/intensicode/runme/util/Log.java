@@ -8,7 +8,7 @@ public final class Log
         {
         if ( aMessage == null ) return new StringBuffer();
 
-        final ArrayList<Integer> insertPositions = new ArrayList();
+        final ArrayList<Integer> insertPositions = new ArrayList<Integer>();
         findInsertPosition( aMessage, 0, insertPositions );
 
         final StringBuffer buffer = new StringBuffer( aMessage );
@@ -126,7 +126,7 @@ public final class Log
 
     // Implementation
 
-    private static void findInsertPosition( final String aMessage, final int aStartIndex, final ArrayList aOutputArray )
+    private static void findInsertPosition( final String aMessage, final int aStartIndex, final ArrayList<Integer> aOutputArray )
         {
         final int foundIndex = aMessage.indexOf( "{}", aStartIndex );
         if ( foundIndex == -1 ) return;
